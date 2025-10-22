@@ -34,14 +34,7 @@ def distance_between_two_points(points):
         average+=temp/len(points)
     return average
 
-def imageshow(image,name, save=True):
-    
-    fig = plt.figure(1,figsize=(12,12))
-    plt.imshow(image,cmap="gray")
-    plt.axis("off")
-    if save:
-        cv2.imwrite(f"{name}.png",image)
-    
+   
 def find_zero_pixels(image):
     mask = np.ones((image.shape[0],image.shape[1]),dtype=int)
     for x in range(0,image.shape[0]):
@@ -63,7 +56,7 @@ def check_neighbours(image,size=3):
     return mask
 
 image_,image = cv2.imread("Example.tif",0), cv2.imread("Example.tif")
-cv2.imwrite("Results\\First.jpg", image_)
+cv2.imwrite("Results\\First.png", image_)
 mask = find_zero_pixels(image_)
 
 
@@ -74,18 +67,18 @@ h,s,v = cv2.split(h_s_v_image)
 temp = cv2.equalizeHist(s-v)
 temp = cv2.threshold(temp,180,255,cv2.THRESH_BINARY)
 temp = cv2.equalizeHist(temp[1])
-imageshow(temp,"Results\\Second")
+cv2.imwrite("Results\\Second.png", temp)
 
 
 kernel = np.ones((7,7),np.float32)/49
 dst = cv2.filter2D(temp,-1,kernel)
-imageshow(dst,"Results\\Third")
+cv2.imwrite("Results\\Third.png",dst)
 
 
 
 ret, binary = cv2.threshold(dst,0,255,cv2.THRESH_OTSU)
 binary = binary.astype(np.uint8)
-imageshow(binary,"Results\\Fourth")
+cv2.imwrite("Results\\Fifth.png", binary)
 
 
 kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (17,17))
@@ -96,19 +89,16 @@ kernel = np.ones((7,7),np.float32)/49
 dst = cv2.filter2D(~temp,-1,kernel)
 
 dst = np.multiply(mask,dst)
-imageshow(dst,"Results\\Fifth")
+cv2.imwrite("Results\\Fifth.png", dst)
 
 kernel = np.ones((5,5),np.float32)/25
-dst = binary_fill_holes(dst, structure=kernel).astype(np.uint8)
-imageshow(dst,"Results\\Sixth") # Problem with this one TODO: Solve
+dst = binary_fill_holes(dst, structure=kernel)
+dst = (dst * 255).astype(np.uint8) # Scale Properly
+cv2.imwrite("Results\\Sixth.png",dst)
 
 
-
-threshold = 750
-
-
+threshold = 750 # Threshold for contours
 contours, hierarchy = cv2.findContours(dst, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
 count = 0
 bigger = [count+1 for c in contours if cv2.contourArea(c) > threshold]
 centers = []
@@ -120,7 +110,7 @@ for c in contours:
         center = [x+w/2, y+h/2]
         centers.append((x+w/2, y+h/2))
         
-imageshow(image,"Results\\Seventh")
+cv2.imwrite("Results\\Seventh.png",image)
 
 
 

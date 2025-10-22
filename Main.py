@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Feb 21 20:24:46 2024
 @author: OMER
 """
 import cv2
@@ -150,3 +149,4 @@ if __name__ == "__main__":
     dst_mask, contour_image, centers = process_image("Example.tif")
     labeled_image, color_image = label_and_colorize(dst_mask)
     print(f"Found {len(centers)} large objects.")
+
